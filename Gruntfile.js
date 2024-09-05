@@ -18,6 +18,13 @@ module.exports = function(grunt) {
                 }
             }
         },
+        uglify: {
+            dist: {
+                files: {
+                    'dist/scripts/main.min.js': ['src/scripts/main.js'] // Minifica o JS
+                }
+            }
+        },
         watch: {
             less: {
                 files: ['src/styles/**/*.less'],
@@ -26,6 +33,10 @@ module.exports = function(grunt) {
             html: {
                 files: ['src/index.html'],
                 tasks: ['replace:dev']
+            },
+            scripts: {
+                files: ['src/scripts/**/*.js'],
+                tasks: ['uglify:dist']
             }
         },
         replace: {
@@ -45,7 +56,7 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        flattend: true,
+                        flatten: true,
                         src: ['src/index.html'],
                         dest: 'dev/'
                     }
@@ -57,13 +68,17 @@ module.exports = function(grunt) {
                         {
                             match: 'ENDERECO_DO_CSS',
                             replacement: './styles/main.min.css'
+                        },
+                        {
+                            match: 'ENDERECO_DO_JS',
+                            replacement: './scripts/main.min.js' // Aponta para o JS minificado
                         }
                     ]
                 },
                 files: [
                     {
                         expand: true,
-                        flattend: true,
+                        flatten: true,
                         src: ['prebuild/index.html'],
                         dest: 'dist/'
                     }
@@ -82,7 +97,7 @@ module.exports = function(grunt) {
             }
         },
         clean: ['prebuild']
-    })
+    });
 
 
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -90,7 +105,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask ('default', ['watch']);
-    grunt.registerTask ('build', ['less:production', 'htmlmin:dist', 'replace:dist', 'clean']);
+
+    grunt.registerTask('default', ['watch']);
+    grunt.registerTask('build', ['less:production', 'uglify:dist', 'htmlmin:dist', 'replace:dist', 'clean']);
 }
